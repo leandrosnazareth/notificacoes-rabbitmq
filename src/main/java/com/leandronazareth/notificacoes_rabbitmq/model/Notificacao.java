@@ -24,7 +24,7 @@ public class Notificacao {
     // Destinatário da notificação.
     private String destinatario;
     // Status da notificação: PENDENTE, RESPONDIDO ou EXPIRADO.
-    private String status; // PENDENTE, RESPONDIDO, EXPIRADO
+    private String status;
     // Resposta recebida do destinatário.
     private String resposta;
     // Data de criação da notificação.

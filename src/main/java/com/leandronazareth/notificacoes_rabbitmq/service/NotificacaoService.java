@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.leandronazareth.notificacoes_rabbitmq.config.RabbitMQConfig;
@@ -14,8 +15,9 @@ import com.leandronazareth.notificacoes_rabbitmq.repository.NotificacaoRepositor
 // Serviço responsável pela lógica de criação, agendamento de timeout e processamento de respostas das notificações.
 public class NotificacaoService {
 
-    // Para o teste, vamos usar 1 minuto (60.000 ms) em vez de 15.
-    private static final int TIMEOUT_DELAY_MS = 60 * 1000;
+    // Tempo de espera (em milissegundos) para expirar uma notificação, configurável via application.properties
+    @Value("${timeout.delay.ms}")
+    private int timeoutDelayMs;
 
     @Autowired
     // Repositório para persistência das notificações.
@@ -47,7 +49,7 @@ public class NotificacaoService {
                 RabbitMQConfig.ROUTING_KEY,
                 notificacaoSalva.getId(), // O corpo da mensagem é apenas o ID
                 message -> {
-                    message.getMessageProperties().setHeader("x-delay", TIMEOUT_DELAY_MS);
+                    message.getMessageProperties().setHeader("x-delay", timeoutDelayMs);
                     return message;
                 });
 

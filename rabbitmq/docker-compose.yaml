@@ -1,0 +1,21 @@
+services:
+  rabbitmq:
+    # 'build: .' instrui o Docker a construir uma imagem a partir do
+    # Dockerfile localizado no diretório atual.
+    build: .
+    container_name: rabbitmq-final
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      # Você pode definir seu usuário e senha aqui.
+      # Lembre-se de atualizar na sua aplicação Java!
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=password
+    volumes:
+      # Este volume é opcional, mas recomendado para manter os dados do RabbitMQ
+      # (filas, mensagens) caso o contêiner seja recriado.
+      - rabbitmq_data:/var/lib/rabbitmq
+
+volumes:
+  rabbitmq_data:
