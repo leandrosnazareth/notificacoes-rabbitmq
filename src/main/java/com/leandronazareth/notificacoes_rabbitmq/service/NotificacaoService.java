@@ -11,17 +11,25 @@ import com.leandronazareth.notificacoes_rabbitmq.model.Notificacao;
 import com.leandronazareth.notificacoes_rabbitmq.repository.NotificacaoRepository;
 
 @Service
+// Serviço responsável pela lógica de criação, agendamento de timeout e processamento de respostas das notificações.
 public class NotificacaoService {
 
     // Para o teste, vamos usar 1 minuto (60.000 ms) em vez de 15.
     private static final int TIMEOUT_DELAY_MS = 60 * 1000;
 
     @Autowired
+    // Repositório para persistência das notificações.
     private NotificacaoRepository repository;
 
     @Autowired
+    // Template para envio de mensagens ao RabbitMQ.
     private RabbitTemplate rabbitTemplate;
 
+    /**
+     * Cria uma notificação com status PENDENTE e agenda o timeout via RabbitMQ.
+     * @param destinatario destinatário da notificação
+     * @return notificação criada e salva
+     */
     public Notificacao criarEAgendarTimeout(String destinatario) {
         // 1. Cria e salva a notificação com status PENDENTE
         Notificacao notificacao = new Notificacao();
@@ -46,6 +54,13 @@ public class NotificacaoService {
         return notificacaoSalva;
     }
 
+    /**
+     * Processa a resposta recebida para uma notificação.
+     * Só altera o status se ainda estiver pendente.
+     * @param id identificador da notificação
+     * @param resposta conteúdo da resposta recebida
+     * @return notificação atualizada ou nulo se não encontrada
+     */
     public Notificacao processarResposta(Long id, String resposta) {
         return repository.findById(id).map(notificacao -> {
             // Só processa se ainda estiver pendente
